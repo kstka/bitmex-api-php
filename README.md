@@ -16,4 +16,4 @@ Get API keys from https://www.bitmex.com/app/apiKeys
     ?>
 
 ## Donations
-You BitCoin donations are highly appreciated [1N36HHos4qQ76PX1BrmeaJCzWDmggreuNU](https://blockchain.info/address/1N36HHos4qQ76PX1BrmeaJCzWDmggreuNU)
+Your BitCoin donations are highly appreciated [1N36HHos4qQ76PX1BrmeaJCzWDmggreuNU](https://blockchain.info/address/1N36HHos4qQ76PX1BrmeaJCzWDmggreuNU)
