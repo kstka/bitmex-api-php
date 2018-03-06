@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * BitMex PHP REST API
+ *
+ * @author y0un1verse
+ * @version 0.1
+ * @link https://github.com/y0un1verse/bitmex-api-php
+ */
+
 class BitMex {
 
   //const API_URL = 'https://testnet.bitmex.com';
@@ -10,6 +18,11 @@ class BitMex {
   private $apiKey = '';
   private $apiSecret = '';
 
+  /*
+   * @param string $apiKey    API Key
+   * @param string $apiSecret API Secret
+   */
+
   public function __construct($apiKey,$apiSecret) {
     $this->apiKey = $apiKey;
     $this->apiSecret = $apiSecret;
@@ -17,7 +30,12 @@ class BitMex {
 
   /*
    * Public
+   */
+
+  /*
+   * Get Ticker
    *
+   * @return ticker array
    */
 
   public function getTicker() {
@@ -30,7 +48,7 @@ class BitMex {
 
     $return = $this->publicQuery($data);
 
-    if(!$return || count($return) != 1|| !isset($return[0]['symbol'])) return false;
+    if(!$return || count($return) != 1 || !isset($return[0]['symbol'])) return false;
 
     $return = array(
       "symbol" => $return[0]['symbol'],
@@ -44,6 +62,17 @@ class BitMex {
     return $return;
 
   }
+
+  /*
+   * Get Candles
+   *
+   * Get candles history
+   *
+   * @param $timeFrame can be 1m 5m 1h
+   * @param $count candles count
+   *
+   * @return candles array (from past to present)
+   */
 
   public function getCandles($timeFrame,$count) {
 
@@ -84,6 +113,14 @@ class BitMex {
 
   }
 
+  /*
+   * Get Orders
+   *
+   * Get all orders
+   *
+   * @return orders array
+   */
+
   public function getOrders() {
 
     $symbol = self::SYMBOL;
@@ -96,6 +133,14 @@ class BitMex {
 
     return $this->authQuery($data);
   }
+
+  /*
+   * Get Open Orders
+   *
+   * Get all open orders
+   *
+   * @return open orders array
+   */
 
   public function getOpenOrders() {
 
@@ -118,6 +163,14 @@ class BitMex {
 
   }
 
+  /*
+   * Get Open Positions
+   *
+   * Get all your open positions
+   *
+   * @return open positions array
+   */
+
   public function getOpenPositions() {
 
     $symbol = self::SYMBOL;
@@ -130,6 +183,17 @@ class BitMex {
     return $this->authQuery($data);
   }
 
+  /*
+   * Edit Order Price
+   *
+   * Edit you open order price
+   *
+   * @param $orderID    Order ID
+   * @param $price      new price
+   *
+   * @return new order array
+   */
+
   public function editOrderPrice($orderID,$price) {
 
     $data['method'] = "PUT";
@@ -141,6 +205,19 @@ class BitMex {
 
     return $this->authQuery($data);
   }
+
+  /*
+   * Create Order
+   *
+   * Create new market order
+   *
+   * @param $type can be "Limit"
+   * @param $side can be "Buy" or "Sell"
+   * @param $price BTC price in USD
+   * @param $quantity should be in USD (number of contracts)
+   *
+   * @return new order array
+   */
 
   public function createOrder($type,$side,$price,$quantity) {
 
@@ -158,6 +235,16 @@ class BitMex {
     return $this->authQuery($data);
   }
 
+  /*
+   * Cancel All Open Orders
+   *
+   * Cancels all your open orders
+   *
+   * @param $text is a note to all closed orders
+   *
+   * @return all closed orders arrays
+   */
+
   public function cancelAllOpenOrders($text = "") {
 
     $symbol = self::SYMBOL;
@@ -170,6 +257,17 @@ class BitMex {
 
     return $this->authQuery($data);
   }
+
+  /*
+   * Cancel Order
+   *
+   * Cancels your open order
+   *
+   * @param $orderID is an order ID
+   * @param $text is a note to a closing order
+   *
+   * @return canceled order array
+   */
 
   public function cancelOrder($orderID,$text = "") {
 
@@ -186,6 +284,16 @@ class BitMex {
   /*
    * Private
    *
+   */
+
+  /*
+   * Auth Query
+   *
+   * Query for authenticated queries only
+   *
+   * @param $data consists method (GET,POST,DELETE,PUT),function,params
+   *
+   * @return return array
    */
 
   private function authQuery($data) {
@@ -256,6 +364,16 @@ class BitMex {
     }
 
   }
+
+  /*
+   * Public Query
+   *
+   * Query for public queries only
+   *
+   * @param $data consists function,params
+   *
+   * @return return array
+   */
 
   private function publicQuery($data) {
 
