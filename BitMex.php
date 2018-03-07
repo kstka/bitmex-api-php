@@ -10,8 +10,8 @@
 
 class BitMex {
 
-  const API_URL = 'https://testnet.bitmex.com';
-  //const API_URL = 'https://www.bitmex.com';
+  //const API_URL = 'https://testnet.bitmex.com';
+  const API_URL = 'https://www.bitmex.com';
   const API_PATH = '/api/v1/';
   const SYMBOL = 'XBTUSD';
 
@@ -116,28 +116,29 @@ class BitMex {
   /*
    * Get Orders
    *
-   * Get all orders
+   * Get last 100 orders
    *
-   * @return orders array
+   * @return orders array (from the past to the present)
    */
 
-  public function getOrders() {
+  public function getOrders($count = 100) {
 
     $symbol = self::SYMBOL;
     $data['method'] = "GET";
     $data['function'] = "order";
     $data['params'] = array(
       "symbol" => $symbol,
-      "reverse" => "false"
+      "count" => $count,
+      "reverse" => "true"
     );
 
-    return $this->authQuery($data);
+    return array_reverse($this->authQuery($data));
   }
 
   /*
    * Get Open Orders
    *
-   * Get all open orders
+   * Get open orders from the last 100 orders
    *
    * @return open orders array
    */
@@ -149,7 +150,7 @@ class BitMex {
     $data['function'] = "order";
     $data['params'] = array(
       "symbol" => $symbol,
-      "reverse" => "false"
+      "reverse" => "true"
     );
 
     $orders = $this->authQuery($data);
@@ -215,11 +216,12 @@ class BitMex {
    * @param $side can be "Buy" or "Sell"
    * @param $price BTC price in USD
    * @param $quantity should be in USD (number of contracts)
+   * @param $maker forces platform to complete your order as a 'maker' only
    *
    * @return new order array
    */
 
-  public function createOrder($type,$side,$price,$quantity) {
+  public function createOrder($type,$side,$price,$quantity,$maker = false) {
 
     $symbol = self::SYMBOL;
     $data['method'] = "POST";
@@ -231,6 +233,10 @@ class BitMex {
       "orderQty" => $quantity,
       "ordType" => $type
     );
+
+    if($maker) {
+      $data['params']['execInst'] = "ParticipateDoNotInitiate";
+    }
 
     return $this->authQuery($data);
   }
