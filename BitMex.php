@@ -10,8 +10,8 @@
 
 class BitMex {
 
-  //const API_URL = 'https://testnet.bitmex.com';
-  const API_URL = 'https://www.bitmex.com';
+  const API_URL = 'https://testnet.bitmex.com';
+  //const API_URL = 'https://www.bitmex.com';
   const API_PATH = '/api/v1/';
   const SYMBOL = 'XBTUSD';
 
@@ -375,12 +375,10 @@ class BitMex {
     $return = json_decode($return,true);
 
     if(isset($return['error'])) {
-      echo "BitMex error: ".$return['error']['name']." : ".$return['error']['message']."\n";
-      return false;
+      return $this->platformError($return);
     }
-    else {
-      return $return;
-    }
+
+    return $return;
 
   }
 
@@ -413,29 +411,55 @@ class BitMex {
     $return = json_decode($return,true);
 
     if(isset($return['error'])) {
-      echo "BitMex error: ".$return['error']['name']." : ".$return['error']['message']."\n";
-      return false;
-    }
-    else {
-      return $return;
+      return $this->platformError($return);
     }
 
+    return $return;
+
   }
+
+  /*
+   * Generate Nonce
+   *
+   * @return string
+   */
 
   private function generateNonce() {
+
     $nonce = (string) number_format(round(microtime(true) * 100000), 0, '.', '');
+
     return $nonce;
+
   }
+
+  /*
+   * Curl Error
+   *
+   * @return false
+   */
 
   private function curlError($ch) {
 
     if ($errno = curl_errno($ch)) {
       $errorMessage = curl_strerror($errno);
-      echo "cURL error ({$errno}): {$errorMessage}\n";
+      echo "cURL error ({$errno}) : {$errorMessage}\n";
       return false;
     }
 
-    return true;
+    return false;
+  }
+
+  /*
+   * Platform Error
+   *
+   * @return false
+   */
+
+  private function platformError($return) {
+
+    echo "BitMex error ({$return['error']['name']}) : {$return['error']['message']}\n";
+
+    return false;
   }
 
 }
