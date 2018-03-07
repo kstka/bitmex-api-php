@@ -238,7 +238,7 @@ class BitMex {
   /*
    * Cancel All Open Orders
    *
-   * Cancels all your open orders
+   * Cancels all of your open orders
    *
    * @param $text is a note to all closed orders
    *
@@ -276,6 +276,25 @@ class BitMex {
     $data['params'] = array(
       "orderID" => $orderID,
       "text" => $text
+    );
+
+    return $this->authQuery($data);
+  }
+
+  /*
+   * Get Wallet
+   *
+   * Get your account balance
+   *
+   * @return array
+   */
+
+  public function getWallet() {
+
+    $data['method'] = "GET";
+    $data['function'] = "user/wallet";
+    $data['params'] = array(
+      "currency" => "XBt"
     );
 
     return $this->authQuery($data);
