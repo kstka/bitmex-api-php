@@ -181,7 +181,16 @@ class BitMex {
       "symbol" => $symbol
     );
 
-    return $this->authQuery($data);
+    $positions = $this->authQuery($data);
+
+    $openPositions = array();
+    foreach($positions as $position) {
+      if(isset($position['isOpen']) && $position['isOpen'] == true) {
+        $openPositions[] = $position;
+      }
+    }
+
+    return $openPositions;
   }
 
   /*
@@ -265,32 +274,9 @@ class BitMex {
   }
 
   /*
-   * Cancel Order
-   *
-   * Cancels your open order
-   *
-   * @param $orderID is an order ID
-   * @param $text is a note to a closing order
-   *
-   * @return canceled order array
-   */
-
-  public function cancelOrder($orderID,$text = "") {
-
-    $data['method'] = "DELETE";
-    $data['function'] = "order";
-    $data['params'] = array(
-      "orderID" => $orderID,
-      "text" => $text
-    );
-
-    return $this->authQuery($data);
-  }
-
-  /*
    * Get Wallet
    *
-   * Get your account balance
+   * Get your account wallet
    *
    * @return array
    */
@@ -299,6 +285,25 @@ class BitMex {
 
     $data['method'] = "GET";
     $data['function'] = "user/wallet";
+    $data['params'] = array(
+      "currency" => "XBt"
+    );
+
+    return $this->authQuery($data);
+  }
+
+  /*
+   * Get Margin
+   *
+   * Get your account margin
+   *
+   * @return array
+   */
+
+  public function getMargin() {
+
+    $data['method'] = "GET";
+    $data['function'] = "user/margin";
     $data['params'] = array(
       "currency" => "XBt"
     );
