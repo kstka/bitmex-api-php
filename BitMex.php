@@ -114,6 +114,37 @@ class BitMex {
   }
 
   /*
+   * Get Order
+   *
+   * Get order by order ID
+   *
+   * @return array or false
+   */
+
+  public function getOrder($orderID,$count = 100) {
+
+    $symbol = self::SYMBOL;
+    $data['method'] = "GET";
+    $data['function'] = "order";
+    $data['params'] = array(
+      "symbol" => $symbol,
+      "count" => $count,
+      "reverse" => "true"
+    );
+
+    $orders = $this->authQuery($data);
+
+    foreach($orders as $order) {
+      if($order['orderID'] == $orderID) {
+        return $order;
+      }
+    }
+
+    return false;
+
+  }
+
+  /*
    * Get Orders
    *
    * Get last 100 orders
