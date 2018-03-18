@@ -1,7 +1,9 @@
 # bitmex-api-php
-BitMex PHP REST API
+BitMex PHP REST API with HTTP Keep-Alive support
 
 Get API keys from https://www.bitmex.com/app/apiKeys
+
+HTTP Keep-Alive: BitMex says that "When using HTTP Keep-Alive, request/response round-trip time will be identical to Websocket"
 
 ## Usage Example
     <?php
