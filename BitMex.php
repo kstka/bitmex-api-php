@@ -15,17 +15,23 @@ class BitMex {
   const API_PATH = '/api/v1/';
   const SYMBOL = 'XBTUSD';
 
-  private $apiKey = '';
-  private $apiSecret = '';
+  private $apiKey;
+  private $apiSecret;
+
+  private $ch;
 
   /*
    * @param string $apiKey    API Key
    * @param string $apiSecret API Secret
    */
 
-  public function __construct($apiKey,$apiSecret) {
+  public function __construct($apiKey = '', $apiSecret = '') {
+
     $this->apiKey = $apiKey;
     $this->apiSecret = $apiSecret;
+
+    $this->curlInit();
+
   }
 
   /*
@@ -380,38 +386,42 @@ class BitMex {
     else {
       $post = $params;
     }
+
     $sign = hash_hmac('sha256', $method.$path.$nonce.$post, $this->apiSecret);
 
-    $headers = array(
-      'api-signature: '.$sign,
-      'api-key: '.$this->apiKey,
-      'api-nonce: '.$nonce
-    );
+    $headers = array();
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
+    $headers[] = "api-signature: $sign";
+    $headers[] = "api-key: {$this->apiKey}";
+    $headers[] = "api-nonce: $nonce";
+
+    $headers[] = 'Connection: Keep-Alive';
+    $headers[] = 'Keep-Alive: 90';
+
+    curl_reset($this->ch);
+    curl_setopt($this->ch, CURLOPT_URL, $url);
     if($data['method'] == "POST") {
-      curl_setopt($ch, CURLOPT_POST, true);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+      curl_setopt($this->ch, CURLOPT_POST, true);
+      curl_setopt($this->ch, CURLOPT_POSTFIELDS, $post);
     }
     if($data['method'] == "DELETE") {
-      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+      curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+      curl_setopt($this->ch, CURLOPT_POSTFIELDS, $post);
       $headers[] = 'X-HTTP-Method-Override: DELETE';
     }
     if($data['method'] == "PUT") {
-      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-      //curl_setopt($ch, CURLOPT_PUT, true);
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+      curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, "PUT");
+      //curl_setopt($this->ch, CURLOPT_PUT, true);
+      curl_setopt($this->ch, CURLOPT_POSTFIELDS, $post);
       $headers[] = 'X-HTTP-Method-Override: PUT';
     }
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER , false);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $return = curl_exec($ch);
+    curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER , false);
+    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+    $return = curl_exec($this->ch);
 
     if(!$return) {
-      return $this->curlError($ch);
+      return $this->curlError();
     }
 
     $return = json_decode($return,true);
@@ -440,14 +450,20 @@ class BitMex {
     $params = http_build_query($data['params']);
     $url = self::API_URL . self::API_PATH . $function . "?" . $params;;
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER , false);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $return = curl_exec($ch);
+    $headers = array();
+
+    $headers[] = 'Connection: Keep-Alive';
+    $headers[] = 'Keep-Alive: 90';
+
+    curl_reset($this->ch);
+    curl_setopt($this->ch, CURLOPT_URL, $url);
+    curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER , false);
+    curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
+    $return = curl_exec($this->ch);
 
     if(!$return) {
-      return $this->curlError($ch);
+      return $this->curlError();
     }
 
     $return = json_decode($return,true);
@@ -475,14 +491,26 @@ class BitMex {
   }
 
   /*
+   * Curl Init
+   *
+   * Init curl header to support keep-alive connection
+   */
+
+  private function curlInit() {
+
+    $this->ch = curl_init();
+
+  }
+
+  /*
    * Curl Error
    *
    * @return false
    */
 
-  private function curlError($ch) {
+  private function curlError() {
 
-    if ($errno = curl_errno($ch)) {
+    if ($errno = curl_errno($this->ch)) {
       $errorMessage = curl_strerror($errno);
       echo "cURL error ({$errno}) : {$errorMessage}\n";
       return false;
