@@ -76,11 +76,12 @@ class BitMex {
    *
    * @param $timeFrame can be 1m 5m 1h
    * @param $count candles count
+   * @param $offset timestamp conversion offset in seconds
    *
    * @return candles array (from past to present)
    */
 
-  public function getCandles($timeFrame,$count) {
+  public function getCandles($timeFrame,$count,$offset = 0) {
 
     $symbol = self::SYMBOL;
     $data['function'] = "trade/bucketed";
@@ -99,7 +100,7 @@ class BitMex {
     // Converting
     foreach($return as $item) {
 
-      $time = strtotime($item['timestamp']); // Unix time stamp
+      $time = strtotime($item['timestamp']) + $offset; // Unix time stamp
 
       $candles[$time] = array(
         'timestamp' => date('Y-m-d H:i:s',$time), // Local time human-readable time stamp
@@ -228,6 +229,27 @@ class BitMex {
     }
 
     return $openPositions;
+  }
+
+  /*
+   * Close Position
+   *
+   * Close open position
+   *
+   * @return array
+   */
+
+  public function closePosition($price) {
+
+    $symbol = self::SYMBOL;
+    $data['method'] = "POST";
+    $data['function'] = "order/closePosition";
+    $data['params'] = array(
+      "symbol" => $symbol,
+      "price" => $price
+    );
+
+    return $this->authQuery($data);
   }
 
   /*
