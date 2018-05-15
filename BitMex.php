@@ -20,6 +20,11 @@ class BitMex {
 
   private $ch;
 
+  public $error;
+  public $printErrors = false;
+  public $errorCode;
+  public $errorMessage;
+
   /*
    * @param string $apiKey    API Key
    * @param string $apiSecret API Secret
@@ -486,14 +491,22 @@ class BitMex {
     $return = curl_exec($this->ch);
 
     if(!$return) {
-      return $this->curlError();
+      $this->curlError();
+      $this->error = true;
+      return false;
     }
 
     $return = json_decode($return,true);
 
     if(isset($return['error'])) {
-      return $this->platformError($return);
+      $this->platformError($return);
+      $this->error = true;
+      return false;
     }
+
+    $this->error = false;
+    $this->errorCode = false;
+    $this->errorMessage = false;
 
     return $return;
 
@@ -528,14 +541,22 @@ class BitMex {
     $return = curl_exec($this->ch);
 
     if(!$return) {
-      return $this->curlError();
+      $this->curlError();
+      $this->error = true;
+      return false;
     }
 
     $return = json_decode($return,true);
 
     if(isset($return['error'])) {
-      return $this->platformError($return);
+      $this->platformError($return);
+      $this->error = true;
+      return false;
     }
+
+    $this->error = false;
+    $this->errorCode = false;
+    $this->errorMessage = false;
 
     return $return;
 
@@ -576,9 +597,11 @@ class BitMex {
   private function curlError() {
 
     if ($errno = curl_errno($this->ch)) {
+      $this->errorCode = $errno;
       $errorMessage = curl_strerror($errno);
-      echo "cURL error ({$errno}) : {$errorMessage}\n";
-      return false;
+      $this->errorMessage = $errorMessage;
+      if($this->printErrors) echo "cURL error ({$errno}) : {$errorMessage}\n";
+      return true;
     }
 
     return false;
@@ -592,9 +615,11 @@ class BitMex {
 
   private function platformError($return) {
 
-    echo "BitMex error ({$return['error']['name']}) : {$return['error']['message']}\n";
+    $this->errorCode = $return['error']['name'];
+    $this->errorMessage = $return['error']['message'];
+    if($this->printErrors) echo "BitMex error ({$return['error']['name']}) : {$return['error']['message']}\n";
 
-    return false;
+    return true;
   }
 
 }
