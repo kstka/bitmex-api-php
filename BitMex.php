@@ -283,7 +283,7 @@ class BitMex {
   /*
    * Create Order
    *
-   * Create new market order
+   * Create new order
    *
    * @param $type can be "Limit"
    * @param $side can be "Buy" or "Sell"
@@ -310,6 +310,32 @@ class BitMex {
     if($maker) {
       $data['params']['execInst'] = "ParticipateDoNotInitiate";
     }
+
+    return $this->authQuery($data);
+  }
+
+ /*
+  * Create Stop Market Order
+  *
+  * Create new stop market order
+  *
+  * @param $price BTC trigger price
+  * @param $quantity should be in USD (number of contracts)
+  *
+  * @return new order array
+  */
+
+  public function createStopMarketOrder($quantity,$price) {
+
+    $symbol = self::SYMBOL;
+    $data['method'] = "POST";
+    $data['function'] = "order";
+    $data['params'] = array(
+      "symbol" => $symbol,
+      "stopPx" => $price,
+      "orderQty" => $quantity,
+      "ordType" => "Stop"
+    );
 
     return $this->authQuery($data);
   }
