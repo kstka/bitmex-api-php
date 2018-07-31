@@ -314,16 +314,47 @@ class BitMex {
     return $this->authQuery($data);
   }
 
- /*
-  * Create Stop Market Order
-  *
-  * Create new stop market order
-  *
-  * @param $price BTC trigger price
-  * @param $quantity should be in USD (number of contracts)
-  *
-  * @return new order array
-  */
+  /*
+   * Create Limit Order
+   *
+   * Create new limit order
+   *
+   * @param $price number of contracts
+   * @param $quantity (number of contracts) positive for buy and negative for sell
+   * @param $maker forces platform to complete your order as a 'maker' only
+   *
+   * @return new order array
+   */
+
+  public function createLimitOrder($quantity,$price,$maker = false) {
+
+    $symbol = self::SYMBOL;
+    $data['method'] = "POST";
+    $data['function'] = "order";
+    $data['params'] = array(
+      "symbol" => $symbol,
+      "price" => $price,
+      "orderQty" => $quantity,
+      "ordType" => "Limit"
+    );
+
+    if($maker) {
+      $data['params']['execInst'] = "ParticipateDoNotInitiate";
+    }
+
+    return $this->authQuery($data);
+  }
+
+  /*
+   * Create Stop Market Order
+   *
+   * Create new stop market order
+   *
+   * @param $price BTC trigger price
+   * @param $quantity should be in USD (number of contracts)
+   *
+   * @return new order array
+   */
 
   public function createStopMarketOrder($quantity,$price) {
 
