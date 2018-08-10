@@ -393,7 +393,7 @@ class BitMex {
       "stopPx" => $stopPrice,
       "price" => $price,
       "orderQty" => $quantity,
-      "ordType" => "Stop"
+      "ordType" => "StopLimit"
     );
 
     return $this->authQuery($data);
