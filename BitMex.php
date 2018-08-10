@@ -237,6 +237,28 @@ class BitMex {
   }
 
   /*
+   * Get Positions
+   *
+   * Get all of your positions
+   *
+   * @return positions array
+   */
+
+  public function getPositions() {
+
+    $symbol = self::SYMBOL;
+    $data['method'] = "GET";
+    $data['function'] = "position";
+    $data['params'] = array(
+      "symbol" => $symbol
+    );
+
+    $positions = $this->authQuery($data);
+
+    return $positions;
+  }
+
+  /*
    * Close Position
    *
    * Close open position
