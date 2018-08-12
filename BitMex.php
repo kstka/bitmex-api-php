@@ -378,7 +378,7 @@ class BitMex {
    * @return new order array
    */
 
-  public function createStopMarketOrder($quantity,$stopPrice) {
+  public function createStopMarketOrder($quantity,$stopPrice,$instructions = false) {
 
     $symbol = self::SYMBOL;
     $data['method'] = "POST";
@@ -389,6 +389,10 @@ class BitMex {
       "orderQty" => $quantity,
       "ordType" => "Stop"
     );
+
+    if($instructions) {
+      $data['params']['execInst'] = $instructions;
+    }
 
     return $this->authQuery($data);
   }
