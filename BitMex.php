@@ -348,7 +348,7 @@ class BitMex {
    * @return new order array
    */
 
-  public function createLimitOrder($quantity,$price,$maker = false) {
+  public function createLimitOrder($quantity,$price,$instructions = false) {
 
     $symbol = self::SYMBOL;
     $data['method'] = "POST";
@@ -360,8 +360,8 @@ class BitMex {
       "ordType" => "Limit"
     );
 
-    if($maker) {
-      $data['params']['execInst'] = "ParticipateDoNotInitiate";
+    if($instructions) {
+      $data['params']['execInst'] = $instructions;
     }
 
     return $this->authQuery($data);
@@ -405,7 +405,7 @@ class BitMex {
    * @return new order array
    */
 
-  public function createStopLimitOrder($quantity,$stopPrice,$price) {
+  public function createStopLimitOrder($quantity,$stopPrice,$price,$instructions = false) {
 
     $symbol = self::SYMBOL;
     $data['method'] = "POST";
@@ -417,6 +417,10 @@ class BitMex {
       "orderQty" => $quantity,
       "ordType" => "StopLimit"
     );
+
+    if($instructions) {
+      $data['params']['execInst'] = $instructions;
+    }
 
     return $this->authQuery($data);
   }
