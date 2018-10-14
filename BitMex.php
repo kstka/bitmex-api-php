@@ -25,6 +25,10 @@ class BitMex {
   public $errorCode;
   public $errorMessage;
 
+  // To use this option you will need CURL version 7.21.7 or later
+  // Sample $proxy value: 'socks5://user:login@hostname:1080'
+  public $proxy = false;
+
   /*
    * @param string $apiKey    API Key
    * @param string $apiSecret API Secret
@@ -225,6 +229,9 @@ class BitMex {
     );
 
     $positions = $this->authQuery($data);
+
+    if (!is_array($positions))
+      return false;
 
     $openPositions = array();
     foreach($positions as $position) {
@@ -603,6 +610,9 @@ class BitMex {
     curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER , false);
     curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+    if(!empty($this->proxy)) {
+      curl_setopt($this->ch, CURLOPT_PROXY, $this->proxy);
+    }
     $return = curl_exec($this->ch);
 
     if(!$return) {
@@ -653,6 +663,9 @@ class BitMex {
     curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER , false);
     curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
+    if(!empty($this->proxy)) {
+      curl_setopt($this->ch, CURLOPT_PROXY, $this->proxy);
+    }
     $return = curl_exec($this->ch);
 
     if(!$return) {
