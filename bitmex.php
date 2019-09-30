@@ -353,6 +353,25 @@ class BitMex {
     );
 
     return $this->authQuery($data);
+  }  
+  
+  /*
+   * Get Wallet History
+   *
+   * Get your account wallet history
+   *
+   * @return array
+   */
+
+  public function getWalletHistory() {
+
+    $data['method'] = "GET";
+    $data['function'] = "user/walletHistory";
+    $data['params'] = array(
+      "currency" => "XBt"
+    );
+
+    return $this->authQuery($data);
   }
 
   /*
