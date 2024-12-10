@@ -3,9 +3,9 @@
 /*
  * BitMex PHP REST API
  *
- * @author y0un1verse
+ * @author kstka
  * @version 0.1
- * @link https://github.com/y0un1verse/bitmex-api-php
+ * @link https://github.com/kstka/bitmex-api-php
  */
 
 class BitMex {
